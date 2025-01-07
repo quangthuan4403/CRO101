@@ -20,9 +20,9 @@ export default function TabTwoScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Sao mà khó quá vậy</ThemedText>
+        <ThemedText type="title"></ThemedText>
       </ThemedView>
-      <ThemedText>Chỉnh sửa như này á hả .</ThemedText>
+      <ThemedText>.</ThemedText>
       <Collapsible title="File-based routing">
         <ThemedText>
           This app has two screens:{' '}
