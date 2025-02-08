@@ -32,6 +32,7 @@ export default function Lab4Bai1Screen({ navigation }) {
       />
             <Button title="Đi tới Bài 2" onPress={() => navigation.navigate('Lab4_Bai2')} />
 
+
     </View>
   );
 }

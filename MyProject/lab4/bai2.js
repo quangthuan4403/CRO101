@@ -26,7 +26,9 @@ export default function Lab4Bai2Screen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <Text style={styles.text}>Kéo xuống để đổi màu Statusbar</Text>
+
       </ScrollView>
+
     </View>
   );
 }
