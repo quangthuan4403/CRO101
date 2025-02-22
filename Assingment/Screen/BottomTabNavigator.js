@@ -2,6 +2,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome } from '@expo/vector-icons';
 import HomeScreen from '../Screen/HomeScreen';
+import CartScreen from '../Screen/CartScreen';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -29,7 +31,7 @@ export default function BottomTabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Cart" component={HomeScreen} />
+      <Tab.Screen name="Cart" component={CartScreen} />
       <Tab.Screen name="Favorites" component={HomeScreen} />
       <Tab.Screen name="Notifications" component={HomeScreen} />
 

@@ -4,17 +4,32 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './Screen/LoginScreen';
 import RegisterScreen from './Screen/RegisterScreen';
 import BottomTabNavigator from './Screen/BottomTabNavigator';
+import SettingScreen from './Screen/SettingScreen';
+import ProfileScreen from './Screen/ProfileScreen';
+import ProductDetailScreen from './Screen/ProductDetailScreen';
+import { CartProvider } from "./Screen/CartContext";
+
+
+
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <CartProvider>
+<NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="HomeTabs" component={BottomTabNavigator} />
+        <Stack.Screen name="SettingScreen" component={SettingScreen} />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="ProductDetailsScreen" component={ProductDetailScreen} />
+
+
       </Stack.Navigator>
     </NavigationContainer>
+    </CartProvider>
+    
   );
 }
