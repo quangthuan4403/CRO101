@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useFavorites } from "./FavoritesContext"; // Import context
 
 const ProductDetailsScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { item } = route.params;
+  const { favorites, toggleFavorite } = useFavorites(); // ✅ Lấy hàm toggleFavorite từ context
   const [selectedSize, setSelectedSize] = useState("S");
+
+  // Kiểm tra sản phẩm đã yêu thích chưa
+  const isFavorite = favorites.some((favItem) => favItem.id === item.id);
 
   return (
     <View style={styles.container}>
@@ -20,8 +25,8 @@ const ProductDetailsScreen = () => {
       </TouchableOpacity>
 
       {/* Nút yêu thích */}
-      <TouchableOpacity style={styles.favoriteButton}>
-        <Icon name="heart" size={20} color="red" />
+      <TouchableOpacity style={styles.favoriteButton} onPress={() => toggleFavorite(item)}>
+        <Icon name="heart" size={20} color={isFavorite ? "red" : "white"} />
       </TouchableOpacity>
 
       {/* Chi tiết sản phẩm */}

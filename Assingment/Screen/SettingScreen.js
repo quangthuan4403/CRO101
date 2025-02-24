@@ -27,7 +27,7 @@ const SettingsScreen = () => {
 
   const handleLogout = () => {
     setLogoutModalVisible(false);
-    navigation.replace('Login');
+    navigation.navigate('Login');
   };
 
   return (

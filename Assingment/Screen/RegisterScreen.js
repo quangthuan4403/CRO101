@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
 import { FontAwesome, Entypo } from "@expo/vector-icons";
+import { registerUser } from "../Screen/api/firebaseAuth"; // Import hàm đăng ký từ Firebase
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -10,13 +11,28 @@ const RegisterScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Xử lý đăng ký
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      Alert.alert("Lỗi", "Mật khẩu nhập lại không khớp!");
+      return;
+    }
+
+    try {
+      const user = await registerUser(email, password);
+      Alert.alert("Thành công", `Đăng ký thành công: ${user.email}`);
+      navigation.navigate("Login"); // Điều hướng đến màn hình đăng nhập sau khi đăng ký thành công
+    } catch (error) {
+      Alert.alert("Lỗi", error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image source={require("./assets/icon.png")} style={styles.logo} />
       <Text style={styles.title}>Welcome to Lungo !!</Text>
       <Text style={styles.subtitle}>Register to Continue</Text>
 
-      {/* Ô nhập Name */}
       <View style={styles.inputContainer}>
         <FontAwesome name="user" size={18} color="#fff" style={styles.icon} />
         <TextInput
@@ -28,7 +44,6 @@ const RegisterScreen = ({ navigation }) => {
         />
       </View>
 
-      {/* Ô nhập Email */}
       <View style={styles.inputContainer}>
         <FontAwesome name="envelope" size={18} color="#fff" style={styles.icon} />
         <TextInput
@@ -37,10 +52,10 @@ const RegisterScreen = ({ navigation }) => {
           placeholderTextColor="#aaa"
           value={email}
           onChangeText={setEmail}
+          keyboardType="email-address"
         />
       </View>
 
-      {/* Ô nhập Password */}
       <View style={styles.inputContainer}>
         <FontAwesome name="lock" size={20} color="#fff" style={styles.icon} />
         <TextInput
@@ -56,7 +71,6 @@ const RegisterScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Ô nhập lại Password */}
       <View style={styles.inputContainer}>
         <FontAwesome name="lock" size={20} color="#fff" style={styles.icon} />
         <TextInput
@@ -72,12 +86,10 @@ const RegisterScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Nút Register */}
-      <TouchableOpacity style={styles.registerButton}>
+      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerText}>Register</Text>
       </TouchableOpacity>
 
-      {/* Link về Login */}
       <Text style={styles.footerText}>
         You have an account? Click{" "}
         <Text style={styles.linkText} onPress={() => navigation.navigate("Login")}>Sign in</Text>

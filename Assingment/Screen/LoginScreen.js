@@ -1,11 +1,63 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
 import { FontAwesome, Entypo } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Checkbox from "expo-checkbox";
+import { signInUser } from "../Screen/api/firebaseAuth";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Load email & password khi mở app
+  useEffect(() => {
+    loadStoredCredentials();
+  }, []);
+
+  const loadStoredCredentials = async () => {
+    try {
+      const storedEmail = await AsyncStorage.getItem("email");
+      const storedPassword = await AsyncStorage.getItem("password");
+      const storedRememberMe = await AsyncStorage.getItem("rememberMe");
+
+      if (storedEmail && storedPassword && storedRememberMe === "true") {
+        setEmail(storedEmail);
+        setPassword(storedPassword);
+        setRememberMe(true);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải thông tin đăng nhập:", error);
+    }
+  };
+
+  // Xử lý đăng nhập
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    try {
+      const user = await signInUser(email, password);
+      Alert.alert("Thành công", `Đăng nhập thành công: ${user.email}`);
+
+      if (rememberMe) {
+        await AsyncStorage.setItem("email", email);
+        await AsyncStorage.setItem("password", password);
+        await AsyncStorage.setItem("rememberMe", "true");
+      } else {
+        await AsyncStorage.removeItem("email");
+        await AsyncStorage.removeItem("password");
+        await AsyncStorage.setItem("rememberMe", "false");
+      }
+
+      navigation.navigate("HomeTabs"); // Chuyển đến màn hình chính
+    } catch (error) {
+      Alert.alert("Lỗi", error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -13,7 +65,6 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.title}>Welcome to Lungo !!</Text>
       <Text style={styles.subtitle}>Login to Continue</Text>
 
-      {/* Ô nhập Email */}
       <View style={styles.inputContainer}>
         <FontAwesome name="envelope" size={18} color="#fff" style={styles.icon} />
         <TextInput
@@ -22,10 +73,10 @@ const LoginScreen = ({ navigation }) => {
           placeholderTextColor="#aaa"
           value={email}
           onChangeText={setEmail}
+          keyboardType="email-address"
         />
       </View>
 
-      {/* Ô nhập Password */}
       <View style={styles.inputContainer}>
         <FontAwesome name="lock" size={20} color="#fff" style={styles.icon} />
         <TextInput
@@ -41,18 +92,20 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Nút Đăng Nhập */}
-      <TouchableOpacity style={styles.signInButton} onPress={() => navigation.navigate("HomeTabs")}>
+      {/* Ghi nhớ mật khẩu */}
+      <View style={styles.checkboxContainer}>
+        <Checkbox
+          value={rememberMe}
+          onValueChange={setRememberMe}
+          color={rememberMe ? "#FF6C22" : undefined}
+        />
+        <Text style={styles.checkboxText}>Remember Me</Text>
+      </View>
+
+      <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
         <Text style={styles.signInText}>Sign In</Text>
       </TouchableOpacity>
 
-      {/* Nút Đăng nhập với Google */}
-      <TouchableOpacity style={styles.googleButton}>
-        <Image source={require("./assets/icon.png")} style={styles.googleIcon} />
-        <Text style={styles.googleText}>Sign in with Google</Text>
-      </TouchableOpacity>
-
-      {/* Link Đăng Ký & Quên Mật Khẩu */}
       <Text style={styles.footerText}>
         Don't have an account? Click{" "}
         <Text style={styles.linkText} onPress={() => navigation.navigate("Register")}>Register</Text>
@@ -89,6 +142,18 @@ const styles = StyleSheet.create({
   icon: { marginRight: 10 },
   input: { flex: 1, color: "#fff", fontSize: 14 },
 
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    marginBottom: 10,
+  },
+  checkboxText: {
+    color: "#fff",
+    fontSize: 14,
+    marginLeft: 10,
+  },
+
   signInButton: {
     backgroundColor: "#FF6C22",
     width: "100%",
@@ -99,19 +164,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   signInText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
-
-  googleButton: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    width: "100%",
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  googleIcon: { width: 20, height: 20, marginRight: 10 },
-  googleText: { color: "#000", fontSize: 16, fontWeight: "bold" },
 
   footerText: { color: "#aaa", fontSize: 14, marginTop: 15 },
   linkText: { color: "#FF6C22", fontWeight: "bold" },

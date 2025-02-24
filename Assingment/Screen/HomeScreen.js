@@ -7,19 +7,25 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-const categories = ["All", "Cappuccino", "Espresso", "Americano", "Macchiato"];
+const categories = ["All", "Coffe", "Milk", "Tea", "Espresso"];
 const coffeeData = [
-  { id: "1", name: "Cappuccino", description: "With Steamed Milk", price: 4.20, image: require("./assets/capuchino.png") },
-  { id: "2", name: "Cappuccino", description: "With Foam", price: 4.20, image: require("./assets/cafe.png") },
-  { id: "3", name: "Robusta Beans", description: "Medium Roasted", price: 4.20, image: require("./assets/cafe.png") },
-  { id: "4", name: "Arabica Beans", description: "Dark Roasted", price: 4.50, image: require("./assets/cafe.png") },
-  { id: "5", name: "Espresso", description: "Strong & Bold", price: 3.90, image: require("./assets/cafe.png") },
+  { id: "1", name: "Milk Coffe", category: "Coffe", description: "With Steamed Milk", price: 4.20, image: require("./assets/capuchino.png") },
+  { id: "2", name: "Black Coffe", category: "Coffe", description: "With Foam", price: 4.20, image: require("./assets/cafe.png") },
+  { id: "3", name: "Milk Tea", category: "Milk", description: "Medium Roasted", price: 4.20, image: require("./assets/cafe.png") },
+  { id: "4", name: "fresh Milk", category: "Milk", description: "Medium Roasted", price: 4.20, image: require("./assets/cafe.png") },
+  { id: "5", name: "Peach Tea", category: "Tea", description: "Medium Roasted", price: 4.20, image: require("./assets/cafe.png") },
+  { id: "6", name: "Lemon Tea", category: "Tea", description: "Dark Roasted", price: 4.50, image: require("./assets/cafe.png") },
+  { id: "7", name: "Espresso", category: "Espresso", description: "Strong & Bold", price: 3.90, image: require("./assets/cafe.png") },
 ];
 
 const HomeScreen = () => {
   const { addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const navigation = useNavigation();
+
+  const filteredData = selectedCategory === "All"
+  ? coffeeData
+  : coffeeData.filter(item => item.category === selectedCategory);
   
   return (
     <SafeAreaView style={styles.container}>
@@ -59,29 +65,30 @@ const HomeScreen = () => {
       </View>
 
       <FlatList
-        data={coffeeData}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: "space-between" }}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate("ProductDetailsScreen", { item })}
-          >
-            <Image source={item.image} style={styles.image} />
-            <Text style={styles.title}>{item.name}</Text>
-            <Text style={styles.description}>{item.description}</Text>
-            <View style={styles.priceContainer}>
-              <Text style={styles.price}>${item.price.toFixed(2)}</Text>
-              <TouchableOpacity style={styles.addButton} onPress={() => addToCart(item)}>
-                <Text style={styles.addButtonText}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+  data={filteredData} // Thay coffeeData bằng filteredData
+  keyExtractor={(item) => item.id}
+  numColumns={2}
+  columnWrapperStyle={{ justifyContent: "space-between" }}
+  contentContainerStyle={{ paddingBottom: 20 }}
+  showsVerticalScrollIndicator={false}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate("ProductDetailsScreen", { item })}
+    >
+      <Image source={item.image} style={styles.image} />
+      <Text style={styles.title}>{item.name}</Text>
+      <Text style={styles.description}>{item.description}</Text>
+      <View style={styles.priceContainer}>
+        <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+        <TouchableOpacity style={styles.addButton} onPress={() => addToCart(item)}>
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  )}
+/>
+
     </SafeAreaView>
   );
 };
