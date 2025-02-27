@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import {
-  View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert
+  View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert, ActivityIndicator
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useCart } from "./CartContext";
 import { ordersCollection } from "./api/firebaseConfig";
 import { addDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth"; // 🔥 Thêm Firebase Auth
 
 const PaymentScreen = () => {
   const navigation = useNavigation();
@@ -13,6 +14,8 @@ const PaymentScreen = () => {
   const { selectedItems, totalPrice } = route.params;
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const { clearPaidItems } = useCart();
+  const auth = getAuth();
+  const [loading, setLoading] = useState(false); // 🔥 Thêm state loading
 
   const paymentMethods = [
     { id: "momo", name: "MoMo" },
@@ -22,16 +25,24 @@ const PaymentScreen = () => {
 
   const handlePayment = async () => {
     if (!selectedPaymentMethod) {
-      alert("Please select a payment method");
+      Alert.alert("Lỗi", "Vui lòng chọn phương thức thanh toán");
       return;
     }
 
     if (!selectedItems || selectedItems.length === 0) {
-      alert("No items in cart");
+      Alert.alert("Lỗi", "Không có sản phẩm trong giỏ hàng");
       return;
     }
 
+    if (!auth.currentUser) {
+      Alert.alert("Lỗi", "Bạn cần đăng nhập để thanh toán");
+      return;
+    }
+
+    setLoading(true); // 🔥 Bật trạng thái loading
+
     const newOrder = {
+      userId: auth.currentUser.uid,
       date: new Date().toISOString(),
       items: selectedItems.map(item => ({
         id: item.id,
@@ -42,7 +53,7 @@ const PaymentScreen = () => {
         image: typeof item.image === "string" ? item.image : "https://example.com/default-image.jpg",
       })),
       totalAmount: totalPrice,
-      paymentMethod: selectedPaymentMethod, // 🔥 Lưu phương thức thanh toán chính xác
+      paymentMethod: selectedPaymentMethod,
     };
 
     try {
@@ -52,18 +63,20 @@ const PaymentScreen = () => {
       const selectedIds = selectedItems.map(item => item.id);
       clearPaidItems(selectedIds);
 
-      Alert.alert("Payment Successful", "Your order has been placed!", [
+      Alert.alert("Thanh toán thành công", "Đơn hàng của bạn đã được đặt!", [
         { text: "OK", onPress: () => navigation.navigate("HomeTabs") }
       ]);
     } catch (error) {
-      console.error("Error saving order:", error);
-      alert("Payment failed, please try again.");
+      console.error("Lỗi khi lưu đơn hàng:", error);
+      Alert.alert("Lỗi", "Thanh toán thất bại, vui lòng thử lại.");
+    } finally {
+      setLoading(false); // 🔥 Tắt trạng thái loading
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Payment</Text>
+      <Text style={styles.title}>Thanh toán</Text>
       <FlatList
         data={selectedItems || []}
         keyExtractor={(item, index) => item?.id?.toString() || index.toString()}
@@ -80,9 +93,9 @@ const PaymentScreen = () => {
           </View>
         )}
       />
-      <Text style={styles.total}>Total: ${totalPrice}</Text>
+      <Text style={styles.total}>Tổng cộng: ${totalPrice}</Text>
 
-      <Text style={styles.paymentTitle}>Select Payment Method</Text>
+      <Text style={styles.paymentTitle}>Chọn phương thức thanh toán</Text>
       {paymentMethods.map((method) => (
         <TouchableOpacity
           key={method.id}
@@ -93,8 +106,16 @@ const PaymentScreen = () => {
         </TouchableOpacity>
       ))}
 
-      <TouchableOpacity style={styles.payButton} onPress={handlePayment}>
-        <Text style={styles.payButtonText}>Proceed to Pay</Text>
+      <TouchableOpacity 
+        style={styles.payButton} 
+        onPress={handlePayment} 
+        disabled={loading} // 🔥 Disable khi đang loading
+      >
+        {loading ? ( // 🔥 Hiển thị loading nếu đang xử lý thanh toán
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.payButtonText}>Thanh toán</Text>
+        )}
       </TouchableOpacity>
     </View>
   );

@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet } from "react-native";
 import { ordersCollection } from "./api/firebaseConfig";
-import { onSnapshot } from "firebase/firestore";
+import { onSnapshot, query, where } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const NotificationScreen = () => {
     const [orders, setOrders] = useState([]);
+    const auth = getAuth();
+    const currentUser = auth.currentUser; // Lấy thông tin người dùng hiện tại
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(ordersCollection, (snapshot) => {
+        if (!currentUser) return; // Nếu chưa đăng nhập, không tải dữ liệu
+
+        // Tạo query để chỉ lấy đơn hàng của user hiện tại
+        const q = query(ordersCollection, where("userId", "==", currentUser.uid));
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
             const orderList = snapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() }))
-                .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sắp xếp giảm dần theo thời gian đặt hàng
+                .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sắp xếp giảm dần theo thời gian
             setOrders(orderList);
         });
+
         return () => unsubscribe();
-    }, []);
+    }, [currentUser]);
 
     return (
         <View style={styles.container}>
