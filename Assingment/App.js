@@ -5,10 +5,13 @@ import LoginScreen from './Screen/LoginScreen';
 import RegisterScreen from './Screen/RegisterScreen';
 import BottomTabNavigator from './Screen/BottomTabNavigator';
 import SettingScreen from './Screen/SettingScreen';
-import ProfileScreen from './Screen/ProfileScreen';
+import ChangePasswordScreen from './Screen/ChangePasswordScreen';
 import ProductDetailScreen from './Screen/ProductDetailScreen';
+import PaymentScreen from './Screen/PaymentScreen';
 import { CartProvider } from "./Screen/CartContext";
 import { FavoritesProvider } from "./Screen/FavoritesContext";
+import NotificationScreen from './Screen/NotificationScreen';
+
 
 
 
@@ -26,7 +29,9 @@ export default function App() {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="HomeTabs" component={BottomTabNavigator} />
         <Stack.Screen name="SettingScreen" component={SettingScreen} />
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
+        <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
+        <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
         <Stack.Screen name="ProductDetailsScreen" component={ProductDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>

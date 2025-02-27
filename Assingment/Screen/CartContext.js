@@ -4,6 +4,15 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  
+  const clearPaidItems = (selectedIds) => {
+    if (!Array.isArray(selectedIds) || selectedIds.length === 0) {
+      console.error("clearPaidItems: selectedIds is not a valid array", selectedIds);
+      return;
+    }
+    setCart((prevCart) => prevCart.filter((item) => !selectedIds.includes(item.id)));
+  };
+  
 
   const addToCart = (item) => {
     setCart(prevCart => {
@@ -38,7 +47,7 @@ export const CartProvider = ({ children }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQuantity, updateSize, removeFromCart }}>
+    <CartContext.Provider value={{ cart, addToCart, updateQuantity, updateSize, removeFromCart, clearPaidItems }}>
       {children}
     </CartContext.Provider>
   );
@@ -47,3 +56,4 @@ export const CartProvider = ({ children }) => {
 export const useCart = () => {
   return useContext(CartContext);
 };
+

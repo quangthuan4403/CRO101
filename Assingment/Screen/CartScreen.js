@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, StatusBar, SafeAreaView } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -9,22 +9,31 @@ const sizes = ["S", "M", "L"];
 const CartScreen = () => {
   const navigation = useNavigation();
   const { cart, updateQuantity, updateSize, removeFromCart } = useCart();
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const toggleSelectItem = (id) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.includes(id) ? prevSelected.filter((item) => item !== id) : [...prevSelected, id]
+    );
+  };
 
   const calculateTotalPrice = () => {
-    return cart.reduce((total, item) => {
-      const price = parseFloat(item.price) || 0;
-      const quantity = item.quantity || 1;
-      return total + price * quantity;
-    }, 0).toFixed(2);
+    return cart
+      .filter((item) => selectedItems.includes(item.id))
+      .reduce((total, item) => total + (parseFloat(item.price) || 0) * (item.quantity || 1), 0)
+      .toFixed(2);
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.cartItem}>
+      <TouchableOpacity onPress={() => toggleSelectItem(item.id)} style={styles.checkbox}>
+        <FontAwesome name={selectedItems.includes(item.id) ? "check-square" : "square-o"} size={24} color="#fff" />
+      </TouchableOpacity>
       <Image source={item.image} style={styles.image} />
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
         <View style={styles.sizeContainer}>
-          {sizes.map(size => (
+          {sizes.map((size) => (
             <TouchableOpacity
               key={size}
               onPress={() => updateSize(item.id, size)}
@@ -56,26 +65,29 @@ const CartScreen = () => {
       <StatusBar barStyle="light-content" />
       <View style={styles.headerWrapper}>
         <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.menuButton}
-            onPress={() => navigation.navigate("SettingScreen")}  // Điều hướng đến màn hình Setting
-          >
+          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate("SettingScreen")}>
             <FontAwesome name="th-large" size={24} color="#ccc" />
           </TouchableOpacity>
-          
-          {/* Tiêu đề giữa */}
           <Text style={styles.headerTitle}>Cart</Text>
-
           <TouchableOpacity>
-            <Image source={require("./assets/icon.png")} style={styles.profileImage} />
+            <Image source={require("./assets/avatar.png")} style={styles.profileImage} />
           </TouchableOpacity>
         </View>
       </View>
-      
       <FlatList data={cart} keyExtractor={(item) => item.id.toString()} renderItem={renderItem} />
       <View style={styles.checkoutContainer}>
         <Text style={styles.totalPrice}>Total Price: ${calculateTotalPrice()}</Text>
-        <TouchableOpacity style={styles.payButton}>
+        <TouchableOpacity 
+          style={styles.payButton} 
+          onPress={() => {
+            const selectedProducts = cart.filter(item => selectedItems.includes(item.id));
+            if (selectedProducts.length > 0) {
+              navigation.navigate("PaymentScreen", { selectedItems: selectedProducts, totalPrice: calculateTotalPrice() });
+            } else {
+              alert("Vui lòng chọn ít nhất một sản phẩm!");
+            }
+          }}
+        >
           <Text style={styles.payButtonText}>Pay</Text>
         </TouchableOpacity>
       </View>
@@ -91,6 +103,7 @@ const styles = StyleSheet.create({
   profileImage: { width: 42, height: 42, borderRadius: 21 },
   headerTitle: { flex: 1, textAlign: "center", color: "#fff", fontSize: 18, fontWeight: "bold" },
   cartItem: { flexDirection: "row", backgroundColor: "#1C1C1E", padding: 15, borderRadius: 12, marginBottom: 10, alignItems: "center" },
+  checkbox: { marginRight: 10 },
   image: { width: 60, height: 60, borderRadius: 10 },
   infoContainer: { flex: 1, marginLeft: 10 },
   name: { color: "#fff", fontSize: 16, fontWeight: "bold" },

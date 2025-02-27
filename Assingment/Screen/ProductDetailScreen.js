@@ -3,16 +3,36 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useFavorites } from "./FavoritesContext"; // Import context
+import { useCart } from "./CartContext"; // Import CartContext
 
 const ProductDetailsScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { item } = route.params;
   const { favorites, toggleFavorite } = useFavorites(); // ✅ Lấy hàm toggleFavorite từ context
+  const { addToCart } = useCart(); // ✅ Lấy hàm addToCart từ CartContext
   const [selectedSize, setSelectedSize] = useState("S");
 
   // Kiểm tra sản phẩm đã yêu thích chưa
   const isFavorite = favorites.some((favItem) => favItem.id === item.id);
+
+  // Xử lý thêm vào giỏ hàng
+  const handleAddToCart = () => {
+    const productToAdd = { ...item, size: selectedSize }; // Thêm kích cỡ sản phẩm
+    addToCart(productToAdd); // Thêm sản phẩm vào giỏ hàng
+    
+    alert("Product added to cart!", "", [
+      {
+        text: "OK",
+        onPress: () => {
+          setTimeout(() => {
+            navigation.navigate('Cart'); // Điều hướng đến màn hình Giỏ hàng
+          }, 100);
+        }
+      }
+    ]);
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -60,7 +80,7 @@ const ProductDetailsScreen = () => {
         {/* Giá và nút thêm vào giỏ hàng */}
         <View style={styles.priceContainer}>
           <Text style={styles.price}>$ {item.price}</Text>
-          <TouchableOpacity style={styles.addButton}>
+          <TouchableOpacity style={styles.addButton} onPress={handleAddToCart}>
             <Text style={styles.addButtonText}>Add to Cart</Text>
           </TouchableOpacity>
         </View>

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
 const settingsOptions = [
   { id: '1', title: 'History', icon: 'history' },
-  { id: '2', title: 'Personal Details', icon: 'user' },
+  { id: '2', title: 'Change Password', icon: 'user' },
   { id: '3', title: 'Address', icon: 'map-marker' },
   { id: '4', title: 'Payment Method', icon: 'credit-card' },
   { id: '5', title: 'About', icon: 'info-circle' },
@@ -20,8 +21,8 @@ const SettingsScreen = () => {
   const handlePress = (title) => {
     if (title === 'Log out') {
       setLogoutModalVisible(true);
-    } else if (title === 'Personal Details') {
-      navigation.navigate('ProfileScreen');
+    } else if (title === 'Change Password') {
+      navigation.navigate('ChangePasswordScreen');
     }
   };
 
