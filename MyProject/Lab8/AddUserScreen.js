@@ -14,7 +14,7 @@ const AddUserScreen = ({ navigation }) => {
         }
 
         try {
-            const response = await axios.post("http://192.168.0.102:3000/users", {
+            const response = await axios.post("http://172.16.53.74:3000/users", {
                 name,
                 birthdate,
                 avatar,

@@ -11,7 +11,7 @@ const UserListScreen = () => {
   const getUserList = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://192.168.0.102:3000/users");
+      const response = await axios.get("http://172.16.53.74:3000/users");
       if (Array.isArray(response.data)) {
         setUsers(response.data);
       }
@@ -36,7 +36,7 @@ const UserListScreen = () => {
         style: "destructive",
         onPress: async () => {
           try {
-            await axios.delete(`http://192.168.0.102:3000/users/${id}`);
+            await axios.delete(`http://172.16.53.74:3000/users/${id}`);
             getUserList(); // Cập nhật lại danh sách sau khi xóa
           } catch (error) {
             console.error("Lỗi khi xóa:", error);

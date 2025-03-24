@@ -10,7 +10,7 @@ const EditUserScreen = ({ route, navigation }) => {
 
     const handleUpdate = async () => {
         try {
-            await axios.put(`http://192.168.0.102:3000/users/${user.id}`, {
+            await axios.put(`http://172.16.53.74:3000/users/${user.id}`, {
                 name,
                 birthdate,
                 address,

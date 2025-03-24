@@ -109,13 +109,17 @@ const HomeScreen = () => {
       </View>
 
       <FlatList
-        data={filteredData}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: "space-between" }}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
+       data={filteredData}
+       keyExtractor={(item) => item.id}
+       numColumns={2}
+       columnWrapperStyle={{ justifyContent: "space-between" }}
+       contentContainerStyle={{ paddingBottom: 20 }}
+       showsVerticalScrollIndicator={false}
+       initialNumToRender={6} // Chỉ render 6 item đầu tiên
+       maxToRenderPerBatch={10} // Render tối đa 10 item một lúc
+       windowSize={5} // Giảm số lượng item giữ trong bộ nhớ
+       removeClippedSubviews={true} // Loại bỏ item không hiển thị
+       renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
             onPress={() => navigation.navigate("ProductDetailsScreen", { item })}

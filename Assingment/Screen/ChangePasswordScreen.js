@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-import { auth } from './api/firebaseConfig'; // Import Firebase auth
-import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'; // Import Firebase Authentication methods
-import { launchImageLibrary } from 'react-native-image-picker'; // Import image picker
+import { auth } from './api/firebaseConfig';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { launchImageLibrary } from 'react-native-image-picker'; 
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -19,11 +19,11 @@ const ProfileScreen = () => {
       return;
     }
 
-    const user = auth.currentUser; // Get the currently logged-in user
+    const user = auth.currentUser; 
 
     if (user) {
       try {
-        // Reauthenticate user with their current password
+     
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
 
