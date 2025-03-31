@@ -11,9 +11,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
       <Stack.Screen name="ScrollHeader" component={ScrollHeaderScreen} />
-        <Stack.Screen name="AnimatedFlatList" component={AnimatedFlatListScreen} />
-        
-        
+      <Stack.Screen name="AnimatedFlatList" component={AnimatedFlatListScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
